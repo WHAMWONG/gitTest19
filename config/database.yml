@@ -1,4 +1,3 @@
-
 # PostgreSQL. Versions 9.3 and up are supported.
 #
 # Install the pg driver:
@@ -22,13 +21,13 @@ default: &default
   # For details on connection pooling, see Rails configuration guide: https://guides.rubyonrails.org/configuring.html#database-pooling
   host: <%= ENV.fetch("BASE_SOURCE_DATABASE_HOST") { "localhost" } %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: postgres
+  username: <%= ENV.fetch("BASE_SOURCE_USERNAME") { "postgres" } %> # Updated to use BASE_SOURCE_USERNAME
+  password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %> # Updated to use BASE_SOURCE_PASSWORD
   port: 5432
 
 development:
   <<: *default
   database: <%= ENV.fetch("DATABASE_NAME") { "base_source_development" } %>
-  password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -61,7 +60,6 @@ development:
 test:
   <<: *default
   database: <%= ENV.fetch("DATABASE_NAME") { "base_source_test" } %>
-  password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is ever seen by anyone, they now have access to your database.
