@@ -1,7 +1,7 @@
 
 # PostgreSQL. Versions 9.3 and up are supported.
 #
-# Install the pg driver and ensure there is enough disk space before creating databases:
+# Install the pg driver and ensure there is enough disk space before creating databases. Check disk space with `df -h`:
 #   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
 # On macOS with Homebrew:
@@ -34,7 +34,7 @@ development:
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
   # When left blank, postgres will use the default role. This is
-  # the same name as the operating system user that initialized the database. Ensure the user has the necessary permissions.
+  # the same name as the operating system user that initialized the database. Ensure the user has the necessary permissions to create and write to the database.
 
   # The password associated with the postgres role (username).
   #password:
