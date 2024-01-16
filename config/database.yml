@@ -1,4 +1,3 @@
-
 # PostgreSQL. Versions 9.3 and up are supported.
 #
 # Install the pg driver:
@@ -25,7 +24,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %> # Ensure the pool size is adequate for your application's workload
   username: postgres
   password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %>
-  port: 5432
+  port: <%= ENV.fetch("DATABASE_PORT") { 5432 } %>
 
 development:
   <<: *default
