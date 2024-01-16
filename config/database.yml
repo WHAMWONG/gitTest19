@@ -1,7 +1,7 @@
+
 # PostgreSQL. Versions 9.3 and up are supported.
 #
-# Install the pg driver:
-#   Ensure there is enough disk space before creating databases
+# Install the pg driver and ensure there is enough disk space before creating databases:
 #   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
 # On macOS with Homebrew:
