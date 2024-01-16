@@ -1,5 +1,7 @@
+
 module Api
   class TodosController < Api::BaseController
+    include ActiveStorage::SetCurrent
     before_action :doorkeeper_authorize!
     before_action :set_todo, only: [:create_attachment]
     before_action :authorize_attachment_creation, only: [:create_attachment]
@@ -9,7 +11,19 @@ module Api
       if service.valid?
         todo = service.call
         if todo
-          render json: { status: 201, todo: todo.as_json }, status: :created
+          # Check for attachments and process them if any
+          if params[:attachments].present?
+            params[:attachments].each do |attachment|
+              todo.attachments.create!(file: attachment)
+            end
+            # Include attachment information in the response
+            attachments = todo.attachments.map do |attachment|
+              { id: attachment.id, file: attachment.file.blob.filename.to_s, created_at: attachment.created_at.iso8601 }
+            end
+            render json: { status: 201, todo: todo.as_json(include: :attachments), attachments: attachments }, status: :created
+          else
+            render json: { status: 201, todo: todo.as_json(include: :attachments) }, status: :created
+          end
         else
           render json: { errors: ['An unexpected error occurred on the server.'] }, status: :internal_server_error
         end
@@ -77,7 +91,7 @@ module Api
     end
 
     def todo_params
-      params.permit(:user_id, :title, :description, :due_date, :category, :priority, :is_recurring, :recurrence)
+      params.permit(:user_id, :title, :description, :due_date, :category, :priority, :is_recurring, :recurrence, attachments: [])
     end
 
     def current_resource_owner

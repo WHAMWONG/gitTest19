@@ -1,3 +1,4 @@
+
 module TodoService
   class Create
     include ActiveModel::Validations
@@ -5,7 +6,7 @@ module TodoService
     validates :title, presence: true
     validate :due_date_in_future, :unique_title_for_user, :valid_priority, :valid_recurrence
 
-    def initialize(user_id:, title:, description: nil, due_date:, category: nil, priority:, is_recurring: false, recurrence: nil)
+    def initialize(user_id:, title:, description: nil, due_date:, category: nil, priority:, is_recurring: false, recurrence: nil, attachments_params: [])
       @user = User.find(user_id)
       @title = title
       @description = description
@@ -14,11 +15,13 @@ module TodoService
       @priority = priority
       @is_recurring = is_recurring
       @recurrence = recurrence
+      @attachments_params = attachments_params
     end
 
     def call
       return unless valid?
 
+      attachments = [] # Placeholder for attachment handling logic
       Todo.transaction do
         todo = @user.todos.create!(
           title: @title,
@@ -29,8 +32,15 @@ module TodoService
           is_recurring: @is_recurring,
           recurrence: @recurrence
         )
+
         # Handle attachments here if applicable
-        todo
+        # Assuming 'attachments_params' is an array of ActionDispatch::Http::UploadedFile objects
+        @attachments_params.each do |attachment_param|
+          attachment = todo.attachments.create!(file: attachment_param)
+          attachments << attachment
+        end unless @attachments_params.blank?
+
+        { todo: todo, attachments: attachments }
       end
     rescue ActiveRecord::RecordInvalid => e
       e.record.errors.full_messages.to_sentence
