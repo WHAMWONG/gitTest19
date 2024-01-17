@@ -1,7 +1,7 @@
 
 # PostgreSQL. Versions 9.3 and up are supported.
 # Ensure there is enough disk space before creating databases and correct permissions.
-# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory and that the server is running.
+# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory and that the server is running. Verify that the PostgreSQL server is running and accessible at the specified IP address "172.20.107.21" and port "5432".
 #   Ensure the PostgreSQL user has the necessary permissions to write to the data directory.
 #   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
@@ -20,7 +20,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
+  host: <%= ENV["DATABASE_HOST"] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %> # Ensure the pool size is adequate for your application's workload
   username: <%= ENV.fetch("DATABASE_USERNAME") { "postgres" } %> # Updated to use DATABASE_USERNAME
   password: <%= ENV.fetch("DATABASE_PASSWORD") { "postgres" } %> # Updated to use DATABASE_PASSWORD
@@ -31,7 +31,7 @@ development:
   database: <%= ENV['DATABASE_NAME_DEVELOPMENT'] %>
 
   # The specified database role being used to connect to postgres.
-  # To create additional roles in postgres see `$ createuser --help`.
+  # To create additional roles in postgres see `$ createuser --help`. Ensure the user has the necessary permissions.
   # When left blank, postgres will use the default role. This is
   # the same name as the operating system user that initialized the database. Ensure the user has the necessary permissions.
 
@@ -61,11 +61,10 @@ development:
 test:
   <<: *default
   database: <%= ENV['DATABASE_NAME_TEST'] %>
-
-# Instead, provide the password as a unix environment variable when you boot
-# the app. Read https://guides.rubyonrails.org/configuring.html#configuring-a-database for a full rundown on how to provide these environment variables in a production deployment.
-# for a full rundown on how to provide these environment variables in a
-# production deployment.
+  # Instead, provide the password as an environment variable when you boot
+  # the app. Read https://guides.rubyonrails.org/configuring.html#configuring-a-database for a full rundown on how to provide these environment variables in a production deployment.
+  # for a full rundown on how to provide these environment variables in a
+  # production deployment.
 #
 # On Heroku and other platform providers, you may have a full connection URL available as an environment variable. For example:
 #
@@ -76,7 +75,7 @@ test:
 #   production: &production
 #     url: <%= ENV['DATABASE_URL'] %>
 #
-production: &production
+production:
   <<: *default
   database: <%= ENV['DATABASE_NAME_PRODUCTION'] %>
   username: <%= ENV.fetch("DATABASE_USERNAME") { "base_source" }.to_s %>
