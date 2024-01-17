@@ -1,6 +1,8 @@
+
 # PostgreSQL. Versions 9.3 and up are supported.
 # Ensure there is enough disk space before creating databases.
 # Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary:
+#   Ensure the PostgreSQL user has the necessary permissions to write to the data directory.
 #   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
 # On macOS with Homebrew:
@@ -18,8 +20,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide: https://guides.rubyonrails.org/configuring.html#database-pooling
-  host: <%= ENV.fetch("BASE_SOURCE_DATABASE_HOST") { "localhost" } %>
+  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %> # Ensure the pool size is adequate for your application's workload
   username: <%= ENV.fetch("BASE_SOURCE_USERNAME") { "postgres" } %> # Updated to use BASE_SOURCE_USERNAME
   password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %> # Updated to use BASE_SOURCE_PASSWORD
