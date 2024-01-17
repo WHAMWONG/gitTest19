@@ -1,10 +1,10 @@
-
 module Api
   class TodosController < Api::BaseController
     include ActiveStorage::SetCurrent
-    before_action :doorkeeper_authorize!
-    before_action :set_todo, only: [:create_attachment]
+    before_action :doorkeeper_authorize!, only: [:create, :validate, :create_attachment, :log_deletion, :destroy]
+    before_action :set_todo, only: [:create_attachment, :destroy]
     before_action :authorize_attachment_creation, only: [:create_attachment]
+    before_action :authorize_log_deletion, only: [:log_deletion]
 
     def create
       service = TodoService::Create.new(todo_params.merge(user_id: current_resource_owner.id))
@@ -79,6 +79,21 @@ module Api
       render json: { error: e.message }, status: :internal_server_error
     end
 
+    def log_deletion
+      authorize :todo, :log_deletion?
+      service = AuditLogService::Create.new(log_deletion_params)
+      if service.valid?
+        message = service.call
+        render json: { status: 200, message: message }, status: :ok
+      else
+        render json: { errors: service.errors.full_messages }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: ['User not found.'] }, status: :bad_request
+    rescue StandardError => e
+      render json: { errors: [e.message] }, status: :internal_server_error
+    end
+
     def destroy
       begin
         id = params[:id]
@@ -116,6 +131,14 @@ module Api
 
     def todo_params
       params.permit(:user_id, :title, :description, :due_date, :category, :priority, :is_recurring, :recurrence, attachments: [])
+    end
+
+    def log_deletion_params
+      params.require(:audit_log).permit(:user_id, :action, :entity_type, :entity_id, :timestamp)
+    end
+
+    def authorize_log_deletion
+      authorize :todo, :log_deletion?
     end
 
     def current_resource_owner

@@ -7,12 +7,19 @@ Rails.application.routes.draw do
   get 'api-docs/v1/swagger.yaml' => 'swagger#yaml'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  # New route for creating todos
+  
+  # Route for creating todos
   post '/api/todos', to: 'api/todos#create'
-  # Existing route for validating todos
+  
+  # Route for validating todos
   get '/api/todos/validate', to: 'api/todos#validate'
+  
+  # Route for deleting todos
   delete '/api/todos/:id', to: 'api/todos#destroy'
   
-  # Add your routes here from the new code
+  # Route for creating attachments for a todo
   post '/api/todos/:todo_id/attachments', to: 'api/todos#create_attachment'
+  
+  # Route for logging deletion of a todo (from new code)
+  post '/api/audit_logs', to: 'api/todos#log_deletion'
 end
