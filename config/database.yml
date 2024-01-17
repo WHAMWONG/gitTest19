@@ -1,6 +1,9 @@
+
 # PostgreSQL. Versions 9.3 and up are supported.
-#
-# Install the pg driver:
+# Ensure there is enough disk space before creating databases and correct permissions.
+# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory and that the server is running. Verify that the PostgreSQL server is running and accessible at the specified IP address "<%= ENV["DATABASE_HOST"] %>" and port "<%= ENV.fetch("DATABASE_PORT") { 5432 } %>".
+#   Ensure the PostgreSQL user has the necessary permissions to write to the data directory.
+#   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
 # On macOS with Homebrew:
 #   gem install pg -- --with-pg-config=/usr/local/bin/pg_config
@@ -17,22 +20,20 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
-  host: <%= ENV.fetch("BASE_SOURCE_DATABASE_HOST") { "localhost" } %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: postgres
-  port: 5432
+  host: <%= ENV["DATABASE_HOST"] %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %> # Ensure the pool size is adequate for your application's workload
+  username: <%= ENV.fetch("DATABASE_USERNAME") { "postgres" } %> # Updated to use DATABASE_USERNAME
+  password: <%= ENV.fetch("DATABASE_PASSWORD") { "postgres" } %> # Updated to use DATABASE_PASSWORD
+  port: <%= ENV.fetch("DATABASE_PORT") { 5432 } %> # Ensure the PostgreSQL server is running and the data directory has sufficient disk space
 
 development:
   <<: *default
-  database: <%= ENV.fetch("DATABASE_NAME") { "base_source_development" } %>
-  password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %>
+  database: <%= ENV['DATABASE_NAME_DEVELOPMENT'] %>
 
   # The specified database role being used to connect to postgres.
-  # To create additional roles in postgres see `$ createuser --help`.
+  # To create additional roles in postgres see `$ createuser --help`. Ensure the user has the necessary permissions.
   # When left blank, postgres will use the default role. This is
-  # the same name as the operating system user that initialized the database.
+  # the same name as the operating system user that initialized the database. Ensure the user has the necessary permissions.
 
   # The password associated with the postgres role (username).
   #password:
@@ -59,36 +60,29 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: <%= ENV.fetch("DATABASE_NAME") { "base_source_test" } %>
-  password: <%= ENV.fetch("BASE_SOURCE_PASSWORD") { "postgres" } %>
-
-# As with config/credentials.yml, you never want to store sensitive information,
-# like your database password, in your source code. If your source code is
-# ever seen by anyone, they now have access to your database.
+  database: <%= ENV['DATABASE_NAME_TEST'] %>
+  # Instead, provide the password as an environment variable when you boot
+  # the app. Read https://guides.rubyonrails.org/configuring.html#configuring-a-database for a full rundown on how to provide these environment variables in a production deployment.
+  # for a full rundown on how to provide these environment variables in a
+  # production deployment.
 #
-# Instead, provide the password as a unix environment variable when you boot
-# the app. Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
-# for a full rundown on how to provide these environment variables in a
-# production deployment.
-#
-# On Heroku and other platform providers, you may have a full connection URL
-# available as an environment variable. For example:
+# On Heroku and other platform providers, you may have a full connection URL available as an environment variable. For example:
 #
 #   DATABASE_URL="postgres://myuser:mypass@localhost/somedatabase"
 #
 # You can use this database configuration with:
 #
-#   production:
+#   production: &production
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
   <<: *default
-  database: <%= ENV.fetch("DATABASE_NAME") { "base_source_production" } %>
-  username: <%= ENV.fetch("BASE_SOURCE_USERNAME") { "base_source" } %>
-  password: <%= ENV["BASE_SOURCE_PASSWORD"] %>
+  database: <%= ENV['DATABASE_NAME_PRODUCTION'] %>
+  username: <%= ENV.fetch("DATABASE_USERNAME") { "base_source" }.to_s %>
+  password: <%= ENV["DATABASE_PASSWORD"].to_s %>
 
 staging:
   <<: *default
-  database: <%= ENV.fetch("DATABASE_NAME") { "base_source_staging" } %>
-  username: <%= ENV.fetch("BASE_SOURCE_USERNAME") { "base_source" } %>
-  password: <%= ENV["BASE_SOURCE_PASSWORD"] %>
+  database: <%= ENV['DATABASE_NAME_STAGING'] %>
+  username: <%= ENV.fetch("DATABASE_USERNAME") { "base_source" } %>
+  password: <%= ENV["DATABASE_PASSWORD"] %>
