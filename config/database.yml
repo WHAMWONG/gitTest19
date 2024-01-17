@@ -1,7 +1,7 @@
 
 # PostgreSQL. Versions 9.3 and up are supported.
 # Ensure there is enough disk space before creating databases and correct permissions.
-# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory and that the server is running. Verify that the PostgreSQL server is running and accessible at the specified IP address "172.20.107.21" and port "5432".
+# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory and that the server is running. Verify that the PostgreSQL server is running and accessible at the specified IP address "<%= ENV["DATABASE_HOST"] %>" and port "<%= ENV.fetch("DATABASE_PORT") { 5432 } %>".
 #   Ensure the PostgreSQL user has the necessary permissions to write to the data directory.
 #   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
