@@ -1,7 +1,7 @@
 
 # PostgreSQL. Versions 9.3 and up are supported.
 # Ensure there is enough disk space before creating databases and correct permissions.
-# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory.
+# Install the pg driver and ensure there is enough disk space before creating databases. Check and free up disk space if necessary. Ensure the PostgreSQL user has the necessary permissions to write to the data directory and that the server is running.
 #   Ensure the PostgreSQL user has the necessary permissions to write to the data directory.
 #   gem install pg -- --with-pg-config=`pg_config --bindir`
 #   gem install pg
@@ -24,7 +24,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %> # Ensure the pool size is adequate for your application's workload
   username: <%= ENV.fetch("DATABASE_USERNAME") { "postgres" } %> # Updated to use DATABASE_USERNAME
   password: <%= ENV.fetch("DATABASE_PASSWORD") { "postgres" } %> # Updated to use DATABASE_PASSWORD
-  port: <%= ENV.fetch("DATABASE_PORT") { 5432 } %> # Ensure the PostgreSQL data directory has sufficient disk space
+  port: <%= ENV.fetch("DATABASE_PORT") { 5432 } %> # Ensure the PostgreSQL server is running and the data directory has sufficient disk space
 
 development:
   <<: *default
@@ -76,7 +76,7 @@ test:
 #   production: &production
 #     url: <%= ENV['DATABASE_URL'] %>
 #
-production:
+production: &production
   <<: *default
   database: <%= ENV['DATABASE_NAME_PRODUCTION'] %>
   username: <%= ENV.fetch("DATABASE_USERNAME") { "base_source" }.to_s %>
